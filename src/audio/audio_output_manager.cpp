@@ -110,11 +110,7 @@ AudioOutputManager::~AudioOutputManager()
 
   sink_->stop();
 
-  // Wait for every detached reader to finish its ScopeExit. live_readers_ is
-  // incremented before each spawn and, as each reader's last act (after it
-  // drops its stream and sink references), decremented and notified under
-  // wait_mutex_. Once it reaches zero no thread can still be inside LiveKit FFI
-  // or touch this manager again.
+  // Wait for every reader thread to exit (see live_readers_).
   std::unique_lock<std::mutex> wait_lock(wait_mutex_);
   reader_exited_.wait(wait_lock, [this]() { return live_readers_.load(std::memory_order_acquire) == 0; });
 }
@@ -252,11 +248,9 @@ void AudioOutputManager::onConnected()
   if (is_shutdown_.load(std::memory_order_acquire)) {
     return;
   }
-  // Readers are deliberately not stopped here. After a resume the SDK keeps
-  // the subscribed track and its stream alive and sends no track events, so a
-  // stopped reader would never be recreated. After a full restart the old
-  // readers already ended on the unsubscribe/unpublish events the SDK sent
-  // before Reconnecting, and the re-announced track is picked up below.
+  // Readers keep running: a resume keeps the track and its stream alive and
+  // sends no track events, so a stopped reader would never come back. A full
+  // restart already ended them on its unpublish events; resubscribe below.
   snapshotSubscribe();
 }
 
@@ -308,12 +302,7 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
 
   live_readers_.fetch_add(1, std::memory_order_acq_rel);
 
-  // Dedicated reader thread: reads decoded PCM and feeds the playback sink.
-  // It captures `this` for the live-reader counter, which is safe because the
-  // destructor waits for live_readers_ to reach zero before returning and the
-  // thread touches no member after its final decrement. The reader owns the
-  // sink claim once it binds and releases it in the ScopeExit, so a handover
-  // rebinds the sink with zero bridge-side identity knowledge.
+  // Capturing this is safe: the destructor waits for this thread to exit.
   try {
     std::thread([this, reader, stream, reader_id, sink = sink_]() mutable {
       const std::string track_sid = reader->track_sid;
@@ -342,26 +331,19 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
           .fieldOr("track_sid", track_sid)
           .field("frames_received", total_frames)
           .info();
-        // Release this thread's references while the manager is still alive.
-        // Once the count reaches zero the destructor may return and the SDK may
-        // shut down, so this detached thread must not be the one to destroy
-        // the last AudioStream or sink reference after that point.
+        // Drop references first: once the count hits zero the SDK may shut down.
         stream.reset();
         reader.reset();
         sink.reset();
-        // Decrement and notify under wait_mutex_: the destructor can neither
-        // slip between its predicate check and its wait and miss the wakeup,
-        // nor observe zero and free reader_exited_ before notify_all() returns.
-        // Nothing after the unlock may touch a member.
+        // Under wait_mutex_ so the destructor cannot miss the wakeup. Nothing after
+        // this may touch a member.
         std::lock_guard<std::mutex> exit_lock(wait_mutex_);
         live_readers_.fetch_sub(1, std::memory_order_acq_rel);
         reader_exited_.notify_all();
       });
 
-      // One backstop for the whole body: read()/bind()/push() are SDK/GStreamer
-      // calls that may throw across the FFI boundary. An exception escaping a
-      // detached thread calls std::terminate(), so nothing is allowed past this
-      // boundary; every failure is logged, then the ScopeExit finalizes.
+      // An exception escaping a detached thread calls std::terminate(), so catch
+      // everything; the ScopeExit still runs.
       try {
         livekit::AudioFrameEvent frame_event;
         while (!reader->stop.load(std::memory_order_acquire)) {
@@ -388,11 +370,7 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
             continue;
           }
 
-          // Retry the claim on every frame until it succeeds. A handover can
-          // find the previous owner not yet finalized, so a one-shot bind on
-          // the first frame would permanently silence this reader; once owned,
-          // stop retrying. Caps are taken from the claiming frame's actual
-          // rate/channels.
+          // Retry the claim on each frame: the previous owner may not have released it yet.
           if (!sink_owned) {
             sink_owned = sink->bind(reader_id, frame.sampleRate(), frame.numChannels());
           }
@@ -409,8 +387,6 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
               .info();
           }
 
-          // While unbound, push() logs once and drops; live frames still re-arm
-          // the sink's rate-bounded restart loop, so a restored device self-heals.
           sink->push(reader_id, samples.data(), samples.size());
           ++total_frames;
         }
@@ -424,9 +400,7 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
     }).detach();
   } catch (...) {
     {
-      // Notify under wait_mutex_ to match the reader's exit path. No destructor
-      // can be waiting here: this runs under event_mutex_, which the destructor
-      // takes before it waits.
+      // Same decrement as the reader's exit path.
       std::lock_guard<std::mutex> exit_lock(wait_mutex_);
       live_readers_.fetch_sub(1, std::memory_order_acq_rel);
       reader_exited_.notify_all();

@@ -48,19 +48,16 @@ inline constexpr GstClockTime kAudioOutputMaxBacklog = 200 * GST_MSECOND;
 // matches the one that runs.
 std::string buildAudioOutputSinkPipelineDescription(const std::string & sink_fragment);
 
-// Timing for one interleaved S16 buffer. The per-channel frame count drives the
-// duration, so a stereo buffer advances the playback clock the same wall time as
-// a mono buffer with the same number of frames. The caller threads next_pts
-// through push(); keeping a running GstClockTime avoids the long-run overflow of
-// multiplying an ever-growing sample counter by GST_SECOND.
+// PTS and duration for one interleaved S16 buffer.
 struct AudioOutputBufferTiming
 {
   GstClockTime pts;
   GstClockTime duration;
 };
 
-// Computes PTS/DURATION for one interleaved S16 buffer. A non-positive channel
-// count is treated as mono; a non-positive rate falls back to 48000 Hz.
+// Computes PTS/DURATION for one interleaved S16 buffer from its per-channel
+// frame count. A non-positive channel count is treated as mono; a non-positive
+// rate falls back to 48000 Hz.
 AudioOutputBufferTiming computeAudioOutputBufferTiming(
   std::size_t sample_count, int channels, int sample_rate, GstClockTime next_pts);
 
@@ -81,19 +78,13 @@ public:
   virtual void stop() = 0;
 };
 
-// Plays received audio output PCM through appsrc (capped, drops oldest) →
-// audioconvert → audioresample → the configured sink fragment. The
-// pipeline is created lazily because appsrc caps come from the first frame's
-// actual rate/channels.
+// Plays received PCM through appsrc (capped, drops oldest) → audioconvert →
+// audioresample → the configured sink fragment. The pipeline starts on the
+// first frame, since appsrc caps come from that frame's rate and channels.
 //
-// Ownership: refcounted; each AudioOutputManager reader thread captures it by
-// copy, so the sink may outlive a single reader. ~AudioOutputSink stops the
-// pipeline and closes the failure handler.
-//
-// Concurrency: frames arrive on per-track reader threads, failures arrive on
-// GStreamer bus threads. A single reader owns the sink at a time (atomic CAS on
-// a reader id); frames from other readers are logged once and dropped, so a
-// second live output track can never steal the sink from the active one.
+// Refcounted: each reader thread holds a copy, so the sink can outlive a reader.
+// Frames arrive on reader threads and failures on GStreamer bus threads; one
+// reader owns the sink at a time (see owner_).
 class AudioOutputSink : public AudioOutputSinkInterface
 {
 public:
@@ -105,19 +96,12 @@ public:
   AudioOutputSink(AudioOutputSink &&) = delete;
   AudioOutputSink & operator=(AudioOutputSink &&) = delete;
 
-  // Claims the sink for this reader (first caller wins) and lazily starts the
-  // playback pipeline with caps built from this frame. Only the owning reader's
-  // first frame ever starts the pipeline. Returns true when this reader owns the
-  // sink; a failed initial pipeline start still reports the claim, because the
-  // owning reader's live frame cadence drives the restart loop until the device
-  // returns.
+  // Claims the sink (first caller wins) and starts the pipeline with this frame's
+  // caps. Returns true when this reader owns the sink, even if the start failed.
   bool bind(std::uint64_t reader_id, int sample_rate, int num_channels) override;
 
-  // Pushes one interleaved S16 frame. Non-owner frames are logged once and
-  // dropped. Push failures are logged and dropped — never tear down (appsrc is
-  // block=false). While the pipeline is down, the caller's live frame cadence
-  // re-arms the rate-bounded restart loop; nothing restarts while no frames
-  // arrive.
+  // Pushes one interleaved S16 frame. Non-owner frames and push failures are
+  // logged and dropped.
   void push(std::uint64_t reader_id, const std::int16_t * samples, std::size_t count) override;
 
   // Releases the claim on reader finalize so the next output track can claim
@@ -156,33 +140,21 @@ private:
   int caps_rate_ = 0;
   int caps_channels_ = 0;
 
-  // PTS of the next buffer on the current pipeline instance; the running source
-  // of buffer PTS/DURATION (audio clock, not wall clock). Reset in
-  // startPipelineLocked() so a restarted pipeline sees timestamps from 0. A
-  // running GstClockTime avoids the long-run overflow of an ever-growing
-  // sample counter multiplied by GST_SECOND.
+  // PTS of the next buffer; reset to 0 on each pipeline start. Kept as a running
+  // value so sample_count * GST_SECOND never overflows.
   GstClockTime next_pts_ = 0;
 
-  // Bumped at the top of every startPipelineLocked() so tests can tell idle
-  // sinks (no frames, no restarts) from sinks whose live frame cadence re-arms
-  // the restart loop.
+  // Counts pipeline starts, for tests.
   std::atomic<std::size_t> pipeline_start_attempts_{0};
 
-  // Lock-free mirror of pipeline_ != nullptr so push() can re-arm the restart
-  // loop without touching mutex_: a restart attempt that fails swallows its
-  // own bus error (schedule() refuses callbacks while callback_running_), and
-  // a dead pipeline emits no further messages — the 10 ms push cadence is what
-  // keeps the ~4 restarts/sec loop alive.
+  // Lock-free mirror of pipeline_ != nullptr, read by push().
   std::atomic<bool> pipeline_active_{false};
 
   // 0 = unclaimed; otherwise the owning reader_id. Claim/release only via CAS.
   std::atomic<std::uint64_t> owner_{0};
   std::atomic<bool> is_shutdown_{false};
 
-  // Last reader id that produced a dropped-frame log, so a chatty non-owner is
-  // logged once rather than per frame. The max() sentinel can never be a real
-  // reader id (ids start at 1), so the first genuine drop always logs. Bounded:
-  // one word, not one set entry per reader for the process lifetime.
+  // Last non-owner that was logged, so each is logged once. max() is never a real id.
   std::atomic<std::uint64_t> last_ignored_reader_{std::numeric_limits<std::uint64_t>::max()};
 
   utils::PipelineFailureHandler failure_handler_;

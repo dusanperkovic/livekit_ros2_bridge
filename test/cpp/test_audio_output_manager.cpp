@@ -42,12 +42,7 @@ namespace livekit_ros2_bridge::audio
 namespace
 {
 
-// Tests assert external behavior only — track events in, subscribe calls and
-// reader lifecycle out — never pipeline internals. The reader threads consume a
-// fake AudioOutputStream and bind a fake AudioOutputSink, so the tests drive
-// frames synchronously without an audio device or the LiveKit FFI. The manager
-// is a plain object: tests call its handlers directly, or route the fake
-// connection's events into them, the way Runtime's callback wiring does.
+// Drives the manager with a fake stream and sink, so no audio device or LiveKit FFI is needed.
 
 constexpr char kOutputTrackName[] = "lkros.audio.out";
 constexpr char kTestSinkFragment[] = "fakesink sync=false";
@@ -711,10 +706,8 @@ TEST_F(AudioOutputManagerTest, NonOutputSubscribedTrackIsIgnored)
   EXPECT_TRUE(factory.created.empty());
 }
 
-// Stress the destructor's reader-drain wait: a regression in the wait/notify
-// bookkeeping manifests as a hang that trips the test timeout, not as a failed
-// expectation. Each iteration starts a live reader and waits for it to exit
-// during destruction, maximizing exposure to a lost wakeup.
+// Stresses the destructor's reader wait; a lost wakeup shows up as a hang that
+// trips the test timeout.
 TEST_F(AudioOutputManagerTest, ReaderShutdownWaitDoesNotLoseWakeups)
 {
   for (int iteration = 0; iteration < 300; ++iteration) {
@@ -731,11 +724,8 @@ TEST_F(AudioOutputManagerTest, ReaderShutdownWaitDoesNotLoseWakeups)
   }
 }
 
-// A reader must drop its stream and sink references before it releases the
-// destructor; otherwise the last reference to a LiveKit AudioStream could be
-// destroyed on the detached thread after the manager (and possibly the SDK) is
-// gone. Once the manager is destroyed, the test must hold the only references.
-// A regression shows up as a timing-dependent failure, so iterate.
+// The destructor must not return while a reader still holds its stream or sink;
+// afterwards the test must hold the only references.
 TEST_F(AudioOutputManagerTest, ReaderReleasesStreamAndSinkBeforeDestructionReturns)
 {
   for (int iteration = 0; iteration < 100; ++iteration) {

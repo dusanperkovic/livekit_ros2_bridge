@@ -46,20 +46,11 @@ public:
 using AudioOutputStreamFactory = std::function<std::shared_ptr<AudioOutputStream>(
   const std::shared_ptr<livekit::Track> & track, std::size_t capacity)>;
 
-// The bridge-side audio output receive path. Consumes the one remote media
-// track the bridge names — the audio output track (`lkros.audio.out`) — by exact
-// name, reads decoded PCM on a dedicated reader thread, and feeds the
-// bridge-owned playback sink. The publisher's identity reaches logs via track
-// events; the bridge performs no identity checks on it.
-//
-// Lifecycle: the manager is created only when `audio.out.sink` is configured, so
-// an unconfigured deployment never touches track events. Every cleanup path
-// (unsubscribe, unpublish, subscription failure, participant disconnect,
-// shutdown) tears down its readers; no orphaned reader threads remain. A
-// reader that ends on its own frees its slot but is not restarted. A
-// reconnect is not a cleanup path: an SDK resume keeps remote tracks and their
-// media alive, and a full restart unpublishes every remote track before it
-// reports Reconnecting, which ends those readers through the paths above.
+// Plays the audio output track: subscribes to `lkros.audio.out` by name, reads
+// decoded PCM on one thread per track, and feeds the playback sink. Created only
+// when `audio.out.sink` is set. Readers stop on unsubscribe, unpublish,
+// subscription failure, participant disconnect, and shutdown; see onConnected()
+// for why reconnects leave them running.
 class AudioOutputManager
 {
 public:
@@ -115,12 +106,9 @@ private:
   std::atomic<std::uint64_t> last_reader_id_{0};
   std::atomic<bool> is_shutdown_{false};
 
-  // Reader lifetime bookkeeping: the destructor waits for every detached reader
-  // to finish before returning, so no thread can still be inside LiveKit FFI
-  // when the SDK shuts down. Each reader first drops its stream, reader, and
-  // sink references, then decrements live_readers_ and notifies reader_exited_ while
-  // holding wait_mutex_, and touches no member after unlocking; the destructor
-  // therefore cannot see zero and free reader_exited_ while a notify is in flight.
+  // The destructor waits for live_readers_ to reach zero, so no reader thread is
+  // still inside LiveKit when the SDK shuts down. Each reader drops its references,
+  // then decrements and notifies under wait_mutex_ as its last act.
   std::atomic<std::size_t> live_readers_{0};
   std::mutex wait_mutex_;
   std::condition_variable reader_exited_;

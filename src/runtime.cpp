@@ -63,11 +63,7 @@ Runtime::Runtime(Runtime::NodeInterfaces interfaces, std::unique_ptr<RoomConnect
       submitRosWork(std::move(work));
     });
 
-  // Audio output exists only when an output device is configured. The manager's
-  // construction order relative to rpc_router_ does not matter for the
-  // capability advertisement: the router is configured above from the same
-  // runtime snapshot. The manager is created here so an unconfigured
-  // deployment never touches track events.
+  // Created only when a sink is configured, so an unconfigured bridge ignores track events.
   if (!config_.audio_output.sink_fragment.empty()) {
     audio_output_manager_ =
       std::make_unique<audio::AudioOutputManager>(*room_connection_, config_.audio_output.sink_fragment);

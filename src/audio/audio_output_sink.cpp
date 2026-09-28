@@ -48,11 +48,6 @@ void onDeepElementAdded(GstBin *, GstBin *, GstElement * element, gpointer)
 
 }  // namespace
 
-// Receive tail: the bridge owns the edge and the output device's own buffering
-// paces playback, so the configured fragment is used verbatim after the
-// convert/resample stages, with sink sync off (see disableAudioOutputSinkSync).
-// appsrc is the only buffer: past kAudioOutputMaxBacklog it drops the oldest
-// audio, so a slow output costs a skip rather than a growing delay.
 std::string buildAudioOutputSinkPipelineDescription(const std::string & sink_fragment)
 {
   std::string description = "appsrc name=";
@@ -136,10 +131,7 @@ bool AudioOutputSink::bind(std::uint64_t reader_id, int sample_rate, int num_cha
     try {
       startPipelineLocked();
     } catch (const std::exception & exception) {
-      // A sink that is dead at bind time is not a binding failure: keep the claim so the owning
-      // reader's live frame cadence re-arms the restart loop (push() schedules while the pipeline
-      // is down) and playback self-heals when the device returns. Ownership is released only by
-      // unbind()/reader finalize or stop().
+      // Keep the claim; the owner's frames retry the start (see push()).
       LogEvent(kLogger, "audio_out_sink_start_failed").fieldOr("error", exception.what()).warn();
       stopPipelineLocked();
     }
@@ -160,9 +152,8 @@ void AudioOutputSink::push(std::uint64_t reader_id, const std::int16_t * samples
   if (samples == nullptr || count == 0) {
     return;
   }
-  // While the pipeline is down, each live frame re-arms the restart loop, which
-  // cannot re-arm itself (a failed restart's own bus error is coalesced). Idle
-  // bridges with no frames never cycle the device.
+  // A failed restart cannot schedule the next one, so while the pipeline is
+  // down each incoming frame schedules it. With no frames, nothing restarts.
   if (!pipeline_active_.load(std::memory_order_acquire)) {
     (void)failure_handler_.schedule();
     return;
@@ -220,10 +211,8 @@ void AudioOutputSink::unbind(std::uint64_t reader_id)
     return;
   }
 
-  // Releasing the claim must also release the output device: otherwise a
-  // coalesced restart could reopen the device after the output track
-  // unpublishes. Cancel the queued restart so it cannot run at all;
-  // restartPipeline()'s owner_ == 0 guard is the second line of defence.
+  // Stop the pipeline and cancel any queued restart so the device is not reopened
+  // after the track is gone.
   stopPipelineLocked();
   failure_handler_.cancelPending();
 }
@@ -247,12 +236,8 @@ std::size_t AudioOutputSink::pipelineStartAttempts() const
   return pipeline_start_attempts_.load(std::memory_order_relaxed);
 }
 
-// This path must stay lock-free against mutex_: the sync bus handler can
-// deliver a failure from inside startPipelineLocked() or restartPipeline(),
-// which hold mutex_ while GStreamer performs the state change. Locking here
-// would deadlock against the calling thread itself. schedule() coalesces
-// duplicate failures, and close() marks the handler closed before teardown, so
-// no sink mutex_ is needed.
+// Lock-free: the sync bus handler can fire while startPipelineLocked() or
+// restartPipeline() holds mutex_ (see mutex_).
 void AudioOutputSink::onBusMessage(GstMessage * message)
 {
   if (is_shutdown_.load(std::memory_order_acquire)) {
@@ -297,9 +282,7 @@ void AudioOutputSink::restartPipeline()
   try {
     startPipelineLocked();
   } catch (const std::exception & exception) {
-    // No retry cap: a permanently missing device restarts at ~4/s, bounded by
-    // the 250 ms delay, while audio keeps arriving. An idle bridge never restarts:
-    // re-arms come only from live frames on the track.
+    // No retry cap; restarts continue only while frames arrive.
     LogEvent(kLogger, "audio_out_sink_restart_failed")
       .fieldOr("error", exception.what())
       .warnThrottle(log_clock_, kRestartFailureLogThrottle);
