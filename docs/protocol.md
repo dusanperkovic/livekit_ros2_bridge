@@ -473,15 +473,15 @@ The audio output track carries live audio from a client into the bridge, which p
 
 ### Name
 
-`lkros.audio.out` is fixed, and bridges advertise it as `features.audio.out.track_name` in [`lkros.capability`](#rpc-lkroscapability). It carries no per-identity suffix — client identities churn on every page reload, and the name describes the track's role: audio the bridge plays out.
+`lkros.audio.out` is fixed, and bridges advertise it as `features.audio.out.track_name` in [`lkros.capability`](#rpc-lkroscapability). It carries no per-identity suffix: the name describes the track's role, audio the bridge plays out, not who publishes it.
 
 ### Requirements
 
 - The bridge MUST connect with auto-subscribe disabled and subscribe only to remote tracks it names. Today that is exactly one name: `lkros.audio.out`.
-- A client that holds the publish right (granted by the app layer on a verified lease) publishes one audio track with this name; the bridge subscribes to it by exact name and plays the decoded audio out of its configured output.
+- A client publishes one audio track with this name; the bridge subscribes to it by exact name and plays the decoded audio through its configured sink.
 - The bridge MUST NOT perform identity checks on the publisher; enforcement of who may publish belongs entirely to the app layer.
-- Mute is silence-through: a muted publisher MUST keep the track alive with silent frames; the bridge MUST NOT react to mute state.
-- When the track is unpublished, the client disconnects, or the client loses its lease (which the app layer signals by unpublishing), the bridge MUST release the sink and rebind it to the next track with this name that delivers a frame.
+- The bridge MUST NOT react to mute state; a muted track keeps the sink until it is unpublished or its publisher disconnects.
+- When the track is unpublished or its publisher disconnects, the bridge MUST release the sink and bind it to the next track with this name that delivers a frame.
 - A second track with this name delivering frames while one is live MUST be logged and dropped; the active track never loses the sink to a racing publisher.
 - A client MUST NOT expect acknowledgement or status entries for audio output; the feature is one-way media with no control-plane messages.
 - On a bridge without `audio.out.sink` configured, no track named `lkros.audio.out` is ever subscribed; publishing one is harmless and produces no effect.
@@ -931,9 +931,8 @@ A common audio output path (only on bridges advertising `audio.out`):
 
 1. Call `lkros.capability` on join; offer audio output only when `features.audio.out` is present, and read its `track_name`.
 2. When output starts, publish one audio track named with the advertised `track_name` (48 kHz mono).
-3. Keep publishing while output is live; a mute is silence-through, and no further signaling is needed.
-4. On lease loss, unpublish the track so the next lease holder can claim the bridge's sink.
-5. Regaining the lease republishes when output next starts; the bridge rebinds its sink to the track's first frame.
+3. Keep publishing while output is live; muting needs no further signaling.
+4. When output stops, unpublish the track. The sink is then free, and the next track with this name to deliver a frame claims it.
 
 ### Heartbeat with `session_id` Fallback
 

@@ -127,8 +127,9 @@ bool AudioOutputSink::bind(std::uint64_t reader_id, int sample_rate, int num_cha
 
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    // A rebind (lease handover) may arrive while the previous pipeline is still
-    // PLAYING; stop it first so two pipelines never compete for the device.
+    // A rebind (the next output track taking over the sink) may arrive while the
+    // previous pipeline is still PLAYING; stop it first so two pipelines never
+    // compete for the device.
     stopPipelineLocked();
     caps_rate_ = sample_rate;
     caps_channels_ = num_channels;
@@ -297,7 +298,7 @@ void AudioOutputSink::restartPipeline()
     startPipelineLocked();
   } catch (const std::exception & exception) {
     // No retry cap: a permanently missing device restarts at ~4/s, bounded by
-    // the 250 ms delay, while audio keeps arriving. Idle robots never restart:
+    // the 250 ms delay, while audio keeps arriving. An idle bridge never restarts:
     // re-arms come only from live frames on the track.
     LogEvent(kLogger, "audio_out_sink_restart_failed")
       .fieldOr("error", exception.what())

@@ -179,12 +179,9 @@ livekit_ros2_bridge:
         type: string
         default_value: ""
         description: >-
-          Free-form GStreamer sink fragment for the audio output playback
-          pipeline (e.g. 'alsasink device=...'). Empty disables audio output
-          entirely; non-empty also advertises the audio output feature via
-          lkros.capability. The bridge prepends appsrc, a lossless queue
-          (bounded at 2 s rather than leaky), audioconvert, and audioresample,
-          and must not contain appsrc or appsink.
+          GStreamer sink for incoming audio, e.g. `alsasink device=default`.
+          Leave empty to disable audio output. Do not include `appsrc` or
+          `appsink`.
     publish:
       max_bitrate_bps:
         type: int

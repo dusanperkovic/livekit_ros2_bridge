@@ -392,8 +392,7 @@ void AudioOutputManager::subscribeOutputTrack(const RemoteTrackEvent & event)
           // find the previous owner not yet finalized, so a one-shot bind on
           // the first frame would permanently silence this reader; once owned,
           // stop retrying. Caps are taken from the claiming frame's actual
-          // rate/channels. Mute is silence-through: silent frames keep flowing
-          // so the sink's claim never blocks the next holder.
+          // rate/channels.
           if (!sink_owned) {
             sink_owned = sink->bind(reader_id, frame.sampleRate(), frame.numChannels());
           }

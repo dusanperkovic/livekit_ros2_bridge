@@ -121,8 +121,8 @@ public:
   void push(std::uint64_t reader_id, const std::int16_t * samples, std::size_t count) override;
 
   // Releases the claim on reader finalize so the next output track can claim
-  // on its first frame (lease-handover rebind, with no bridge-side identity
-  // knowledge). No-op when this reader did not own the sink.
+  // on its first frame; the bridge does not know who published either track.
+  // No-op when this reader did not own the sink.
   void unbind(std::uint64_t reader_id) override;
 
   // Stops the pipeline and disables restarts. Idempotent.

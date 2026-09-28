@@ -36,8 +36,7 @@ namespace
 // Tests assert external behavior: which reader claimed the sink, that lifecycle
 // paths leave the sink rebindable, and that the restart loop stays rate-bounded
 // and owner-gated. The pure timing helper is covered directly; buffer timestamps
-// as delivered to GStreamer are a POC-verified property covered by the real-path
-// integration, not this suite.
+// as delivered to GStreamer are not covered by this suite.
 
 class AudioOutputSinkTest : public test_support::RclcppTestSuite
 {
@@ -125,7 +124,7 @@ TEST_F(AudioOutputSinkTest, UnbindReleasesClaimForNextTrack)
   sink.push(1, makeSamples(480).data(), 480);
   sink.unbind(1);
 
-  // Lease-handover rebind: the next output track claims on its first frame.
+  // Handover: the next output track claims on its first frame.
   EXPECT_TRUE(sink.bind(2, 48000, 1));
   EXPECT_NO_THROW(sink.push(2, makeSamples(480).data(), 480));
 }
