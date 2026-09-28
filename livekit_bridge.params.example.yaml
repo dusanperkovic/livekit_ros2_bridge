@@ -90,3 +90,7 @@ livekit_ros2_bridge:
     #
     # Test source (no microphone needed):
     # audio.other.test.source: "audiotestsrc is-live=true wave=sine"
+
+    # Optional GStreamer sink for incoming audio. Leave empty (default) to
+    # disable audio output. Do not include appsrc or appsink.
+    # audio.out.sink: "alsasink device=hw:0,0"
