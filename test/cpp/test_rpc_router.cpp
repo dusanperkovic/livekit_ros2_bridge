@@ -24,8 +24,11 @@
 #include <utility>
 #include <vector>
 
-#include "access_policy.hpp"
-#include "fake_room_connection.hpp"
+#include "core/access_policy.hpp"
+#include "core/ros_executor_queue.hpp"
+#include "core/ros_service_caller.hpp"
+#include "core/rpc_router.hpp"
+#include "core/subscription_lease_manager.hpp"
 #include "gtest/gtest.h"
 #include "livekit/local_participant.h"
 #include "livekit/rpc_error.h"
@@ -35,13 +38,10 @@
 #include "protocol/detail/base64.hpp"
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp/serialization.hpp"
-#include "ros_executor_queue.hpp"
-#include "ros_service_caller.hpp"
-#include "ros_test_support.hpp"
-#include "rpc_router.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "std_srvs/srv/set_bool.hpp"
-#include "subscription_lease_manager.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 #include "utils/serialized_message.hpp"
 
 namespace livekit_ros2_bridge

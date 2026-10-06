@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "runtime.hpp"
+#include "core/runtime.hpp"
 
 #include <chrono>
 #include <stdexcept>

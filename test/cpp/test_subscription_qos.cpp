@@ -15,8 +15,8 @@
 #include <optional>
 #include <vector>
 
+#include "core/subscription_qos.hpp"
 #include "gtest/gtest.h"
-#include "subscription_qos.hpp"
 
 namespace livekit_ros2_bridge
 {

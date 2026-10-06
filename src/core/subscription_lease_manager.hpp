@@ -26,8 +26,8 @@
 #include <variant>
 #include <vector>
 
-#include "access_policy.hpp"
 #include "audio/stream_spec.hpp"
+#include "core/access_policy.hpp"
 #include "protocol/echo_once.hpp"
 #include "protocol/subscriptions.hpp"
 #include "rclcpp/clock.hpp"

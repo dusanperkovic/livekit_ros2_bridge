@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "subscription_lease_manager.hpp"
+#include "core/subscription_lease_manager.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -25,13 +25,13 @@
 
 #include "audio/stream_spec.hpp"
 #include "audio/track_publisher.hpp"
-#include "data_track_publisher.hpp"
+#include "core/data_track_publisher.hpp"
+#include "core/room_connection.hpp"
 #include "protocol/constants.hpp"
 #include "protocol/subscriptions_json.hpp"
 #include "protocol/validation_error.hpp"
 #include "rclcpp/create_timer.hpp"
 #include "rclcpp/logging.hpp"
-#include "room_connection.hpp"
 #include "ros_interfaces/graph_lookup.hpp"
 #include "utils/log_event.hpp"
 #include "utils/trim.hpp"

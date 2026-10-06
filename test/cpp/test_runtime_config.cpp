@@ -22,9 +22,9 @@
 #include <string>
 #include <vector>
 
+#include "core/runtime_config.hpp"
 #include "gtest/gtest.h"
-#include "ros_test_support.hpp"
-#include "runtime_config.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

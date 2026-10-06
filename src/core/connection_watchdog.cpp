@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "connection_watchdog.hpp"
+#include "core/connection_watchdog.hpp"
 
 #include <cstdlib>
 #include <utility>

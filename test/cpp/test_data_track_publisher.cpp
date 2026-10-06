@@ -23,12 +23,12 @@
 #include <utility>
 #include <vector>
 
-#include "data_track_publisher.hpp"
-#include "fake_room_connection.hpp"
+#include "core/data_track_publisher.hpp"
 #include "gtest/gtest.h"
-#include "ros_test_support.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

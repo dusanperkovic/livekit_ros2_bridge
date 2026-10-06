@@ -17,9 +17,9 @@
 #include <optional>
 #include <string>
 
-#include "access_policy.hpp"
+#include "core/access_policy.hpp"
+#include "core/room_connection.hpp"
 #include "rclcpp/node_interfaces/node_graph_interface.hpp"
-#include "room_connection.hpp"
 
 namespace livekit_ros2_bridge
 {

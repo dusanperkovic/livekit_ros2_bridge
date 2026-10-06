@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 
+#include "core/ros_topic_publisher.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 #include "protocol/cdr.hpp"
@@ -31,7 +32,6 @@
 #include "rclcpp/node.hpp"
 #include "rclcpp/node_options.hpp"
 #include "rclcpp/serialization.hpp"
-#include "ros_topic_publisher.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "std_msgs/msg/string.hpp"

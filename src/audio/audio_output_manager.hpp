@@ -25,9 +25,9 @@
 #include <string>
 
 #include "audio/audio_output_sink.hpp"
+#include "core/room_connection.hpp"
 #include "livekit/audio_stream.h"
 #include "livekit/track.h"
-#include "room_connection.hpp"
 
 namespace livekit_ros2_bridge::audio
 {

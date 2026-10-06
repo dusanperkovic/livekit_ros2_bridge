@@ -20,7 +20,7 @@
 #include <string_view>
 
 #include "gtest/gtest.h"
-#include "ros_test_support.hpp"
+#include "support/ros_test_support.hpp"
 #include "utils/log_event.hpp"
 
 namespace livekit_ros2_bridge

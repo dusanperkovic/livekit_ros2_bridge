@@ -21,10 +21,10 @@
 #include <thread>
 #include <vector>
 
+#include "core/ros_executor_queue.hpp"
 #include "gtest/gtest.h"
 #include "rclcpp/executors/single_threaded_executor.hpp"
-#include "ros_executor_queue.hpp"
-#include "ros_test_support.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

@@ -17,10 +17,10 @@
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 #include "protocol/resources_json.hpp"
-#include "protocol_test_support.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "sensor_msgs/srv/set_camera_info.hpp"
+#include "support/protocol_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

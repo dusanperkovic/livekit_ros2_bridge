@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "access_policy.hpp"
+#include "core/access_policy.hpp"
 
 #include <algorithm>
 

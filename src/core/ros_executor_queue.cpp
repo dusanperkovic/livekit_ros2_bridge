@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ros_executor_queue.hpp"
+#include "core/ros_executor_queue.hpp"
 
 #include <cstddef>
 #include <memory>

@@ -22,14 +22,14 @@
 #include <thread>
 #include <vector>
 
+#include "core/ros_service_caller.hpp"
 #include "gtest/gtest.h"
 #include "protocol/services.hpp"
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp/serialization.hpp"
-#include "ros_service_caller.hpp"
-#include "ros_test_support.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "std_srvs/srv/set_bool.hpp"
+#include "support/ros_test_support.hpp"
 #include "utils/serialized_message.hpp"
 
 namespace livekit_ros2_bridge

@@ -17,7 +17,7 @@
 
 #include "gtest/gtest.h"
 #include "livekit_ros2_bridge/node.hpp"
-#include "ros_test_support.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rpc_router.hpp"
+#include "core/rpc_router.hpp"
 
 #include <array>
 #include <exception>
@@ -23,6 +23,9 @@
 #include <utility>
 #include <vector>
 
+#include "core/ros_executor_queue.hpp"
+#include "core/ros_service_caller.hpp"
+#include "core/subscription_lease_manager.hpp"
 #include "livekit/rpc_error.h"
 #include "nlohmann/json.hpp"
 #include "protocol/constants.hpp"
@@ -33,10 +36,7 @@
 #include "protocol/services_json.hpp"
 #include "protocol/validation_error.hpp"
 #include "rclcpp/logging.hpp"
-#include "ros_executor_queue.hpp"
 #include "ros_interfaces/definition_lookup.hpp"
-#include "ros_service_caller.hpp"
-#include "subscription_lease_manager.hpp"
 #include "utils/log_event.hpp"
 
 namespace livekit_ros2_bridge

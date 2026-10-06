@@ -21,9 +21,9 @@
 #include <string_view>
 #include <thread>
 
+#include "core/runtime_config.hpp"
 #include "livekit/room_event_types.h"
 #include "rclcpp/logger.hpp"
-#include "runtime_config.hpp"
 
 namespace livekit_ros2_bridge
 {

@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "access_policy.hpp"
+#include "core/access_policy.hpp"
 #include "protocol/topic_publish.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/generic_publisher.hpp"

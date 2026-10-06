@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "runtime_config.hpp"
+#include "core/runtime_config.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -26,10 +26,10 @@
 
 #include "audio/audio_output_sink.hpp"
 #include "audio/stream_config.hpp"
+#include "core/subscription_qos.hpp"
 #include "livekit_ros2_bridge/livekit_ros2_bridge_parameters.hpp"
 #include "rclcpp/logging.hpp"
 #include "rmw/qos_string_conversions.h"
-#include "subscription_qos.hpp"
 #include "utils/gstreamer_pipeline_validation.hpp"
 #include "utils/log_event.hpp"
 #include "utils/param_entries.hpp"
