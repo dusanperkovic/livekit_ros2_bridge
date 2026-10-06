@@ -1,10 +1,10 @@
-// Copyright (c) 2025-present Polymath Robotics, Inc.
+// Copyright 2025 Polymath Robotics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//    http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,11 @@
 #include <algorithm>
 #include <chrono>
 #include <exception>
+#include <map>
 #include <memory>
 #include <optional>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -352,15 +354,14 @@ void SubscriptionLeaseManager::appendUnsupportedStatus(
       .warn();
   }
 
-  report.statuses.emplace_back(
-    SubscriptionErrorStatus{
-      SubscriptionTargetKind::Topic,
-      "",
-      unsupported.kind,
-      unsupported.name,
-      SubscriptionErrorReason::UnsupportedKind,
-      "This bridge does not support subscription kind '" + unsupported.kind + "'.",
-    });
+  report.statuses.emplace_back(SubscriptionErrorStatus{
+    SubscriptionTargetKind::Topic,
+    "",
+    unsupported.kind,
+    unsupported.name,
+    SubscriptionErrorReason::UnsupportedKind,
+    "This bridge does not support subscription kind '" + unsupported.kind + "'.",
+  });
 }
 
 void SubscriptionLeaseManager::appendDemandStatus(
@@ -371,15 +372,14 @@ void SubscriptionLeaseManager::appendDemandStatus(
 {
   // Bridge-owned `other_video` sources are config entries; subscribe ACLs apply to ROS topics.
   if (demand.kind == SubscriptionTargetKind::Topic && !access_policy_.allows(AccessOperation::Subscribe, demand.name)) {
-    report.statuses.emplace_back(
-      SubscriptionErrorStatus{
-        demand.kind,
-        demand.name,
-        "",
-        std::nullopt,
-        SubscriptionErrorReason::Forbidden,
-        "ROS topic '" + demand.name + "' not permitted.",
-      });
+    report.statuses.emplace_back(SubscriptionErrorStatus{
+      demand.kind,
+      demand.name,
+      "",
+      std::nullopt,
+      SubscriptionErrorReason::Forbidden,
+      "ROS topic '" + demand.name + "' not permitted.",
+    });
     return;
   }
 
@@ -391,15 +391,14 @@ void SubscriptionLeaseManager::appendDemandStatus(
     auto subscription_status = ensure(requester_identity, resolved, expiry);
     report.statuses.emplace_back(std::move(subscription_status));
   } catch (const std::exception & exc) {
-    report.statuses.emplace_back(
-      SubscriptionErrorStatus{
-        demand.kind,
-        demand.name,
-        "",
-        std::nullopt,
-        SubscriptionErrorReason::NotFound,
-        exc.what(),
-      });
+    report.statuses.emplace_back(SubscriptionErrorStatus{
+      demand.kind,
+      demand.name,
+      "",
+      std::nullopt,
+      SubscriptionErrorReason::NotFound,
+      exc.what(),
+    });
   }
 }
 

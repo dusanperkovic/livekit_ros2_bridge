@@ -1,10 +1,10 @@
-// Copyright (c) 2025-present Polymath Robotics, Inc.
+// Copyright 2025 Polymath Robotics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//    http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -309,9 +309,8 @@ TEST_F(AudioOutputManagerTest, IgnoresNonOutputTrackPublishes)
   FakeRoomConnection connection;
   AudioOutputManager manager(connection, kTestSinkFragment);
 
-  manager.onRemoteTrackPublished(
-    RemoteTrackEvent{
-      "participant-1", "PA_track1", "lkros.audio.other.cab_mic", livekit::TrackKind::KIND_AUDIO, nullptr});
+  manager.onRemoteTrackPublished(RemoteTrackEvent{
+    "participant-1", "PA_track1", "lkros.audio.other.cab_mic", livekit::TrackKind::KIND_AUDIO, nullptr});
   manager.onRemoteTrackPublished(
     RemoteTrackEvent{"participant-1", "PA_track2", "some_video_feed", livekit::TrackKind::KIND_VIDEO, nullptr});
 
@@ -699,9 +698,8 @@ TEST_F(AudioOutputManagerTest, NonOutputSubscribedTrackIsIgnored)
   AudioOutputManager manager(connection, sink, factory.make());
 
   auto track = connection.makeSyntheticRemoteTrack();
-  manager.onRemoteTrackSubscribed(
-    RemoteTrackEvent{
-      "participant-1", track->sid(), "lkros.audio.other.cab_mic", livekit::TrackKind::KIND_AUDIO, track});
+  manager.onRemoteTrackSubscribed(RemoteTrackEvent{
+    "participant-1", track->sid(), "lkros.audio.other.cab_mic", livekit::TrackKind::KIND_AUDIO, track});
 
   EXPECT_TRUE(factory.created.empty());
 }

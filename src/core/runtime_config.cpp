@@ -1,10 +1,10 @@
-// Copyright (c) 2025-present Polymath Robotics, Inc.
+// Copyright 2025 Polymath Robotics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//    http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -139,12 +139,11 @@ RuntimeConfig loadRuntimeConfig(const rclcpp::node_interfaces::NodeParametersInt
       std::chrono::duration<double>(params.health.watchdog.recovery_timeout_seconds));
 
     stage = "access_policy";
-    config.access_policy = AccessPolicy(
-      AccessPolicyConfig{
-        AccessRulesConfig{params.access.rules.publish.allow, params.access.rules.publish.deny},
-        AccessRulesConfig{params.access.rules.subscribe.allow, params.access.rules.subscribe.deny},
-        AccessRulesConfig{params.access.rules.service.allow, params.access.rules.service.deny},
-      });
+    config.access_policy = AccessPolicy(AccessPolicyConfig{
+      AccessRulesConfig{params.access.rules.publish.allow, params.access.rules.publish.deny},
+      AccessRulesConfig{params.access.rules.subscribe.allow, params.access.rules.subscribe.deny},
+      AccessRulesConfig{params.access.rules.service.allow, params.access.rules.service.deny},
+    });
 
     stage = "subscription_qos_config";
     config.subscription_qos = loadSubscriptionQosConfig(params);
