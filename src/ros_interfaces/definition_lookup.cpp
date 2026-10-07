@@ -21,12 +21,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "ament_index_cpp/get_resource.hpp"
 #if __has_include("ament_index_cpp/version.h")
   #include "ament_index_cpp/version.h"
 #endif
-#include <vector>
 
 #include "ros_interfaces/failure_cache.hpp"
 
