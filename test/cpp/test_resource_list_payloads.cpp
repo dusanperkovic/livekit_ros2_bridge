@@ -1,10 +1,10 @@
-// Copyright (c) 2025-present Polymath Robotics, Inc.
+// Copyright 2025 Polymath Robotics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//    http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <optional>
+#include <string>
 
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
@@ -74,11 +75,10 @@ TEST(ResourceListPayloadsTest, SerializesServices)
 {
   const auto interface_type = rosidl_generator_traits::name<sensor_msgs::srv::SetCameraInfo>();
 
-  const auto body = nlohmann::json::parse(
-    protocol::resources::serializeServices({
-      {"/backup_camera_info", {interface_type}},
-      {"/set_camera_info", {interface_type}},
-    }));
+  const auto body = nlohmann::json::parse(protocol::resources::serializeServices({
+    {"/backup_camera_info", {interface_type}},
+    {"/set_camera_info", {interface_type}},
+  }));
 
   EXPECT_EQ(
     body,
@@ -100,10 +100,9 @@ TEST(ResourceListPayloadsTest, SerializesTopics)
   const auto interface_type = rosidl_generator_traits::name<sensor_msgs::msg::Image>();
 
   EXPECT_EQ(
-    nlohmann::json::parse(
-      protocol::resources::serializeTopics({
-        {"/camera/image_raw", {interface_type}},
-      })),
+    nlohmann::json::parse(protocol::resources::serializeTopics({
+      {"/camera/image_raw", {interface_type}},
+    })),
     nlohmann::json({
       {"topics",
        nlohmann::json::array({

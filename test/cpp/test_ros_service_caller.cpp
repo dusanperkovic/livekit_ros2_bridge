@@ -1,10 +1,10 @@
-// Copyright (c) 2025-present Polymath Robotics, Inc.
+// Copyright 2025 Polymath Robotics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//    http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -449,10 +449,9 @@ TEST_F(RosServiceCallerTest, DropsLateTimedOutResponseBeforeSettlingLaterCallOnS
   auto first_future = caller.call("requester-1", makeSetBoolRequest("/late_timeout_drop", 100));
 
   ASSERT_EQ(first_request_started_future.wait_for(kShutdownCoordinationTimeout), std::future_status::ready);
-  ASSERT_TRUE(
-    test_support::waitUntil(
-      [&]() { return first_future.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready; },
-      std::chrono::seconds(3)));
+  ASSERT_TRUE(test_support::waitUntil(
+    [&]() { return first_future.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(3)));
   EXPECT_EQ(expectRuntimeErrorMessage(first_future), "Service call timed out.");
 
   auto second_future =
@@ -465,10 +464,9 @@ TEST_F(RosServiceCallerTest, DropsLateTimedOutResponseBeforeSettlingLaterCallOnS
 
   release_second_callback();
 
-  ASSERT_TRUE(
-    test_support::waitUntil(
-      [&]() { return second_future.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready; },
-      std::chrono::seconds(3)));
+  ASSERT_TRUE(test_support::waitUntil(
+    [&]() { return second_future.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(3)));
   const auto second_result = second_future.get();
   const auto second_response = deserializeMessage<std_srvs::srv::SetBool::Response>(second_result.payload);
   EXPECT_FALSE(second_response.success);
