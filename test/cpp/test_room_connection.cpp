@@ -17,9 +17,9 @@
 #include <stdexcept>
 #include <vector>
 
+#include "core/room_connection.hpp"
 #include "gtest/gtest.h"
 #include "protocol/constants.hpp"
-#include "room_connection.hpp"
 
 namespace livekit_ros2_bridge
 {

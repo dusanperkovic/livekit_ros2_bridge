@@ -20,10 +20,10 @@
 #include <string>
 #include <vector>
 
-#include "fake_room_connection.hpp"
 #include "gtest/gtest.h"
 #include "livekit/video_frame.h"
-#include "ros_test_support.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 #include "video/track_publisher.hpp"
 
 namespace livekit_ros2_bridge::video

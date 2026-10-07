@@ -26,8 +26,8 @@
 #include "protocol/constants.hpp"
 #include "protocol/subscriptions_json.hpp"
 #include "protocol/validation_error.hpp"
-#include "protocol_test_support.hpp"
 #include "rclcpp/expand_topic_or_service_name.hpp"
+#include "support/protocol_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

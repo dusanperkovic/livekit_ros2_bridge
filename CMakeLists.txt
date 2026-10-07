@@ -136,27 +136,27 @@ target_link_libraries(livekit_ros2_bridge_audio PRIVATE
 )
 
 add_library(${PROJECT_NAME} SHARED
-  src/access_policy.cpp
-  src/connection_watchdog.cpp
-  src/data_track_publisher.cpp
+  src/core/access_policy.cpp
+  src/core/connection_watchdog.cpp
+  src/core/data_track_publisher.cpp
+  src/core/room_connection.cpp
+  src/core/ros_executor_queue.cpp
+  src/core/ros_service_caller.cpp
+  src/core/ros_topic_publisher.cpp
+  src/core/rpc_router.cpp
+  src/core/runtime.cpp
+  src/core/runtime_config.cpp
+  src/core/subscription_lease_manager.cpp
+  src/core/subscription_qos.cpp
   src/node.cpp
   src/protocol/cdr.cpp
-  src/protocol/echo_once_json.cpp
   src/protocol/detail/base64.cpp
+  src/protocol/echo_once_json.cpp
   src/protocol/interfaces_json.cpp
   src/protocol/resources_json.cpp
   src/protocol/services_json.cpp
   src/protocol/subscriptions_json.cpp
   src/protocol/topic_publish_json.cpp
-  src/room_connection.cpp
-  src/ros_executor_queue.cpp
-  src/ros_service_caller.cpp
-  src/ros_topic_publisher.cpp
-  src/rpc_router.cpp
-  src/runtime_config.cpp
-  src/runtime.cpp
-  src/subscription_lease_manager.cpp
-  src/subscription_qos.cpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_CURRENT_BINARY_DIR}/generated"

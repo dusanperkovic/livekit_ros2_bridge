@@ -27,7 +27,6 @@
 #include <vector>
 
 #include "audio/audio_output_manager.hpp"
-#include "fake_room_connection.hpp"
 #include "gtest/gtest.h"
 #include "livekit/audio_frame.h"
 #include "livekit/audio_stream.h"
@@ -35,7 +34,8 @@
 #include "livekit/remote_participant.h"
 #include "livekit/track.h"
 #include "protocol/constants.hpp"
-#include "ros_test_support.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge::audio
 {

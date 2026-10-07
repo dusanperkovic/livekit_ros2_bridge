@@ -21,12 +21,12 @@
 #include <stdexcept>
 #include <string>
 
-#include "fake_room_connection.hpp"
 #include "gtest/gtest.h"
 #include "livekit/video_frame.h"
-#include "ros_test_support.hpp"
 #include "sensor_msgs/msg/compressed_image.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 #include "utils/pipeline_failure_handler.hpp"
 #include "video/gstreamer_pipeline.hpp"
 #include "video/gstreamer_resources.hpp"

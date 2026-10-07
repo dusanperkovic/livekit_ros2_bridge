@@ -19,11 +19,11 @@
 #include <optional>
 #include <string>
 
-#include "access_policy.hpp"
 #include "audio/stream_spec.hpp"
+#include "core/access_policy.hpp"
+#include "core/room_connection.hpp"
+#include "core/subscription_qos.hpp"
 #include "rclcpp/node_interfaces/node_parameters_interface.hpp"
-#include "room_connection.hpp"
-#include "subscription_qos.hpp"
 #include "video/stream_spec.hpp"
 
 namespace livekit_ros2_bridge

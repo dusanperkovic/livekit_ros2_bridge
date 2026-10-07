@@ -21,10 +21,10 @@
 #include <vector>
 
 #include "audio/track_publisher.hpp"
-#include "fake_room_connection.hpp"
 #include "gtest/gtest.h"
 #include "livekit/audio_frame.h"
-#include "ros_test_support.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge::audio
 {

@@ -20,7 +20,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/cdr.hpp"
 #include "protocol/services_json.hpp"
-#include "protocol_test_support.hpp"
+#include "support/protocol_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

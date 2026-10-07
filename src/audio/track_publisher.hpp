@@ -22,9 +22,9 @@
 #include <string>
 
 #include "audio/stream_spec.hpp"
+#include "core/room_connection.hpp"
 #include "livekit/audio_frame.h"
 #include "livekit/audio_source.h"
-#include "room_connection.hpp"
 
 namespace livekit_ros2_bridge::audio
 {

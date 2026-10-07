@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "room_connection.hpp"
+#include "core/room_connection.hpp"
 
 #include <cstdint>
 #include <exception>

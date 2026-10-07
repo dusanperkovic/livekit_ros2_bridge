@@ -20,6 +20,7 @@
 #include <optional>
 #include <string>
 
+#include "core/subscription_qos.hpp"
 #include "rclcpp/node_interfaces/node_graph_interface.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/node_parameters_interface.hpp"
@@ -27,7 +28,6 @@
 #include "rclcpp/subscription.hpp"
 #include "sensor_msgs/msg/compressed_image.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "subscription_qos.hpp"
 #include "utils/pipeline_failure_handler.hpp"
 #include "video/gstreamer_pipeline.hpp"
 #include "video/stream_spec.hpp"

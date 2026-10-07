@@ -25,7 +25,7 @@
 
 #include "audio/audio_output_sink.hpp"
 #include "gtest/gtest.h"
-#include "ros_test_support.hpp"
+#include "support/ros_test_support.hpp"
 #include "utils/gstreamer_resources.hpp"
 
 namespace livekit_ros2_bridge::audio

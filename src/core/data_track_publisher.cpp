@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "data_track_publisher.hpp"
+#include "core/data_track_publisher.hpp"
 
 #include <chrono>
 #include <cstddef>
@@ -25,6 +25,8 @@
 #include <utility>
 #include <vector>
 
+#include "core/room_connection.hpp"
+#include "core/subscription_qos.hpp"
 #include "livekit/data_track_error.h"
 #include "livekit/data_track_frame.h"
 #include "livekit/result.h"
@@ -32,8 +34,6 @@
 #include "rclcpp/logging.hpp"
 #include "rclcpp/qos.hpp"
 #include "rclcpp/serialized_message.hpp"
-#include "room_connection.hpp"
-#include "subscription_qos.hpp"
 #include "utils/callback_gate.hpp"
 #include "utils/log_event.hpp"
 

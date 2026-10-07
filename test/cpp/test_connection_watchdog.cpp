@@ -17,13 +17,13 @@
 #include <mutex>
 #include <thread>
 
+#include "core/runtime_config.hpp"
 #include "gtest/gtest.h"
 #include "livekit/room_event_types.h"
 #include "rclcpp/logger.hpp"
-#include "runtime_config.hpp"
 
 #define private public
-#include "connection_watchdog.hpp"
+#include "core/connection_watchdog.hpp"
 #undef private
 
 namespace livekit_ros2_bridge

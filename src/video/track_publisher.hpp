@@ -20,14 +20,14 @@
 #include <mutex>
 #include <string>
 
+#include "core/room_connection.hpp"
+#include "core/subscription_qos.hpp"
 #include "livekit/video_frame.h"
 #include "livekit/video_source.h"
 #include "rclcpp/node_interfaces/node_graph_interface.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/node_parameters_interface.hpp"
 #include "rclcpp/node_interfaces/node_topics_interface.hpp"
-#include "room_connection.hpp"
-#include "subscription_qos.hpp"
 #include "video/stream_spec.hpp"
 
 namespace livekit_ros2_bridge::video

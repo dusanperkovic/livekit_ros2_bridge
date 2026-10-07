@@ -17,12 +17,12 @@
 #include <exception>
 #include <memory>
 
+#include "core/room_connection.hpp"
+#include "core/runtime.hpp"
+#include "core/runtime_config.hpp"
 #include "livekit_ros2_bridge/build_info.hpp"
 #include "protocol/constants.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
-#include "room_connection.hpp"
-#include "runtime.hpp"
-#include "runtime_config.hpp"
 #include "utils/log_event.hpp"
 
 namespace livekit_ros2_bridge

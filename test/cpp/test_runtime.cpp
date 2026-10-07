@@ -26,18 +26,18 @@
 #include <utility>
 #include <vector>
 
-#include "connection_watchdog.hpp"
-#include "fake_room_connection.hpp"
+#include "core/connection_watchdog.hpp"
+#include "core/runtime.hpp"
+#include "core/runtime_config.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 #include "protocol/cdr.hpp"
 #include "protocol/constants.hpp"
 #include "rclcpp/serialization.hpp"
-#include "ros_test_support.hpp"
-#include "runtime.hpp"
-#include "runtime_config.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "support/fake_room_connection.hpp"
+#include "support/ros_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-#include "access_policy.hpp"
+#include "core/access_policy.hpp"
 #include "gtest/gtest.h"
 
 namespace livekit_ros2_bridge

@@ -18,11 +18,11 @@
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 #include "protocol/interfaces_json.hpp"
-#include "protocol_test_support.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "std_msgs/msg/header.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "support/protocol_test_support.hpp"
 
 namespace livekit_ros2_bridge
 {

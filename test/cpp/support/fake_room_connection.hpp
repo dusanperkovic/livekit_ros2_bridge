@@ -27,6 +27,7 @@
 #include <utility>
 #include <vector>
 
+#include "core/room_connection.hpp"
 #include "livekit/audio_source.h"
 #include "livekit/data_track_error.h"
 #include "livekit/data_track_frame.h"
@@ -34,7 +35,6 @@
 #include "livekit/remote_participant.h"
 #include "livekit/result.h"
 #include "livekit/room_event_types.h"
-#include "room_connection.hpp"
 
 namespace livekit_ros2_bridge
 {
